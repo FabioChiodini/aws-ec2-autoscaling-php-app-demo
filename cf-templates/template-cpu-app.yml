@@ -197,21 +197,15 @@ Resources:
       UserData:
         Fn::Base64:
           !Sub |
-            #!/bin/bash
-            # Install dependecies
-            sudo yum update -y
-            sudo yum install php php-memcache git -y
-            # Clone repository
-            git clone https://github.com/FabioChiodini/aws-ec2-autoscaling-php-app-demo.git
-            sudo mv aws-ec2-autoscaling-php-app-demo/src/app/* /var/www/html/
-            sudo mv aws-ec2-autoscaling-php-app-demo/src/image/ /var/www/html/
-            sudo mv aws-ec2-autoscaling-php-app-demo/src/css/ /var/www/html/
-            # Update config files
-            sed -i 's/session.save_handler "files"/session.save_handler "memcache"/g' /etc/httpd/conf.d/php.conf
-            sed -i 's%session.save_path    "/var/lib/php/session"%session.save_path "${MemCluster.ConfigurationEndpoint.Address}:11211"%g' /etc/httpd/conf.d/php.conf
-            # Start apache
-            sudo service httpd start
+            #!/bin/sh
+            yum -y install httpd php mysql php-mysql
             chkconfig httpd on
+            /etc/init.d/httpd start
+            cd /tmp
+            wget http://us-east-1-aws-training.s3.amazonaws.com/self-paced-lab-4/examplefiles-as.zip
+            unzip examplefiles-as.zip
+            mv examplefiles-as/* /var/www/html
+            sudo service httpd restart
       Tags:
         - Key: Name
           Value: AppInstance
