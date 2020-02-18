@@ -1,0 +1,1 @@
+Script to configure database
